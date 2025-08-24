@@ -6,7 +6,7 @@ conda activate vddb
 ```
 # Pre-trained models
 
-We provide pretrained checkpoints via Huggingface repo [here](https://drive.google.com/drive/folders/1B98Qe8_nb2IefDkJDYtBGolnH0hjQ1r2?usp=sharing).
+We provide pretrained checkpoints via Google cloud [here](https://drive.google.com/drive/folders/1B98Qe8_nb2IefDkJDYtBGolnH0hjQ1r2?usp=sharing).
 
 # Datasets
 For Edges2Handbags, please follow instructions from [here](https://github.com/junyanz/pytorch-CycleGAN-and-pix2pix/blob/master/docs/datasets.md).
