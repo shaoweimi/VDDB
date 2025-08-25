@@ -25,7 +25,32 @@ import colored_traceback.always
 from ipdb import set_trace as debug
 
 RESULT_DIR = Path("results")
+def load_max_checkpoint(folder_path, model_prefixes):
+    pattern = re.compile(r'_(\d+)\.pt$') 
 
+    steps_dict = {}
+    for filename in os.listdir(folder_path):
+        match = pattern.search(filename)
+        if match:
+            num = int(match.group(1))
+            for prefix in model_prefixes:
+                if filename.startswith(prefix):
+                    steps_dict.setdefault(num, set()).add(prefix)
+
+    valid_steps = [step for step, prefixes in steps_dict.items() if set(prefixes) == set(model_prefixes)]
+
+    if not valid_steps:
+        print("Not find .pt")
+        return None, 0
+
+    max_num = max(valid_steps)
+    max_file_paths = {prefix: os.path.join(folder_path, f"{prefix}_{max_num}.pt")
+                      for prefix in model_prefixes}
+
+    print(f"max step={max_num}, file_path: {max_file_paths}")
+
+    start_step = max_num + 1
+    return max_file_paths, start_step
 def set_seed(seed):
     # https://github.com/pytorch/pytorch/issues/7068
     random.seed(seed)
