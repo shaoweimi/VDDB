@@ -126,12 +126,21 @@ def create_training_options():
 
     if opt.ckpt is not None:
         ckpt_file = RESULT_DIR / opt.ckpt 
-        ckpt_load, number = load_max_checkpoint(ckpt_file)
+        model_prefixes = ["diode_OT_", "diode_DE_"]  
+        checkpoints, start_step = load_max_checkpoint(ckpt_file, model_prefixes)
+
         assert ckpt_file.exists()
-        opt.load_OT = ckpt_load
-        opt.globals_it = number
+        if checkpoints is not None:
+            opt.load_OT = checkpoints["diode_OT_"]
+            opt.load_DE = checkpoints["diode_DE_"]
+            opt.globals_it = start_step
+        else:
+            opt.load_OT = None
+            opt.load_DE = None
+            opt.globals_it= 0
     else:
         opt.load_OT = None
+        opt.load_DE = None
         opt.globals_it = 0
     # opt.globals_it = 0
     # opt.load_OT = None
