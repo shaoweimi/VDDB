@@ -25,30 +25,32 @@ import re
 import torch.multiprocessing as mp
 RESULT_DIR = Path("results")
 
-def load_max_checkpoint(folder_path):
-    pattern = re.compile(r'(\d+)\.pt$')
+def load_max_checkpoint(folder_path, model_prefixes):
+    pattern = re.compile(r'_(\d+)\.pt$') 
 
-    max_num = -1
-    max_file = None
-
+    steps_dict = {}
     for filename in os.listdir(folder_path):
         match = pattern.search(filename)
         if match:
             num = int(match.group(1))
-            if num > max_num:
-                max_num = num
-                max_file = filename
+            for prefix in model_prefixes:
+                if filename.startswith(prefix):
+                    steps_dict.setdefault(num, set()).add(prefix)
 
-    if max_file:
-        max_file_path = os.path.join(folder_path, max_file)
-        print(f"max_epoch: {max_file_path}")
-        #checkpoint = torch.load(max_file_path, map_location='cpu')  # 可改为 'cuda'
-        start_step = max_num+1
-        return max_file_path, start_step
-    else:
-        print("Not find .pt 文件")
-        
+    valid_steps = [step for step, prefixes in steps_dict.items() if set(prefixes) == set(model_prefixes)]
+
+    if not valid_steps:
+        print("Not find .pt")
         return None, 0
+
+    max_num = max(valid_steps)
+    max_file_paths = {prefix: os.path.join(folder_path, f"{prefix}_{max_num}.pt")
+                      for prefix in model_prefixes}
+
+    print(f"max step={max_num}, file_path: {max_file_paths}")
+
+    start_step = max_num + 1
+    return max_file_paths, start_step
 def set_seed(seed):
     # https://github.com/pytorch/pytorch/issues/7068
     random.seed(seed)
