@@ -171,15 +171,18 @@ def main(opt):
     corrupt_method = build_corruption(opt, log, corrupt_type=corrupt_type)
     if opt.ckpt is not None:
         ckpt_file = RESULT_DIR / opt.ckpt 
-        prefixes = ['diode_OT_', 'diode_DE_']
-        # checkpoints = load_max_checkpoints(ckpt_file, prefixes)
+        prefixes = ["diode_OT_", "diode_DE_"]
+        checkpoints, _ = load_max_checkpoint(ckpt_file, prefixes)
 
         # ot_ckpt_path, ot_step = checkpoints['edges2handbags_OT_']
         # de_ckpt_path, de_step = checkpoints['edges2handbags_DE_']
         assert ckpt_file.exists()
-        ckpt_opt.load_OT = RESULT_DIR / opt.ckpt / 'diode_OT_149999.pt'
-        ckpt_opt.load_DE = RESULT_DIR / opt.ckpt / 'diode_DE_149999.pt'
-        # opt.globals_it = ot_step
+        if checkpoints is not None:
+            ckpt_opt.load_OT = checkpoints["diode_OT_"]
+            ckpt_opt.load_DE = checkpoints["diode_DE_"]
+        else:
+            ckpt_opt.load_OT = None
+            ckpt_opt.load_DE = None
     else:
         opt.load_OT = None
         opt.load_DE = None
