@@ -1,7 +1,7 @@
 # Dependencies
 This code is developed with Python3, and we recommend PyTorch >=1.11. Install the dependencies with [Anaconda](https://www.anaconda.com/products/individual) and activate the environment `vddb` with
 ```bash
-conda env create --file requirements.yaml python=3
+conda env create --file requirements.txt python=3
 conda activate vddb
 ```
 # Pre-trained models
